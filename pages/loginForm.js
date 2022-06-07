@@ -1,35 +1,46 @@
-import React, { useState, useEffect } from "react";
-import { useUser, withPageAuthRequired } from "@auth0/nextjs-auth0";
+import React, { useState } from "react";
+import { useUser } from "@auth0/nextjs-auth0";
 import { client } from "../lib/client";
+import { useRouter } from "next/router";
 
-export default withPageAuthRequired(function LoginForm({ data }) {
+export function LoginForm({ sanityUsers }) {
   const { user, error, isLoading } = useUser();
+  const router = useRouter();
 
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const userSlug = name.replaceAll(" ", "").toLowerCase();
-  console.log(user)
+
   const handleSubmit = (event) => {
     event.preventDefault();
 
     const data = {
-      userId: user.sub,
-      email: user.email,
+      userId: user?.sub,
+      email: user?.email,
       slug: userSlug,
       name: name,
       phone: phone,
     };
-    console.log(user.password);
-    fetch("/api/user", {
-      method: "POST",
-      body: JSON.stringify(data),
-    })
-      .then(() => {
-        console.log(data);
+    console.log(sanityUsers)
+    const sanityUser = sanityUsers.map((sUser) => sUser.userId == data.userId);
+    console.log(sanityUser)
+    console.log(data.userId)
+
+    if (data && !sanityUser) {
+      fetch("/api/user", {
+        method: "POST",
+        body: JSON.stringify(data),
       })
-      .catch((err) => {
-        console.log(err);
-      });
+        .then(() => {
+          console.log(data);
+          router.push("/");
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
+      alert("este usuario ya existe.");
+    }
   };
 
   return (
@@ -52,15 +63,17 @@ export default withPageAuthRequired(function LoginForm({ data }) {
           onChange={(e) => setPhone(e.target.value)}
         />
       </label>
-      <input type="submit" />
+      <input type="submit" value="Submit" />
     </form>
   );
-});
+}
+
+export default LoginForm;
 
 export const getStaticProps = async ({ params }) => {
   const query = `*[_type == "user"]`;
 
-  const data = await client.fetch(query);
+  const sanityUsers = await client.fetch(query);
 
-  return { props: { data } };
+  return { props: { sanityUsers } };
 };

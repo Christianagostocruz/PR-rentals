@@ -1,5 +1,5 @@
 import sanityClient from '@sanity/client'
-import { withApiAuthRequired, getSession } from '@auth0/nextjs-auth0'
+import { withApiAuthRequired } from '@auth0/nextjs-auth0'
 
 const config = {
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET,
