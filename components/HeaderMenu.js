@@ -24,16 +24,21 @@ const HeaderMenu = () => {
       )}
       {openMenu == true && (
         <div className="header-menu-button" onClick={openMenuModal}>
-          <TiDeleteOutline />
+          <AiOutlineMenu />
         </div>
       )}
       {openMenu == true && (
         <div className="header-menu">
           <ul>
             {!isLoading && !user && (
-              <Link href="/api/auth/login">
-                <a>Login</a>
-              </Link>
+              <>
+                <Link href="/api/auth/login">
+                  <a>Login</a>
+                </Link>
+                <Link href="/loginForm">
+                  <a>Become Host</a>
+                </Link>
+              </>
             )}
             {!isLoading && user && (
               <>
@@ -46,10 +51,10 @@ const HeaderMenu = () => {
               </>
             )}
             <Link href="/">
-              <li>About us</li>
+              <a>About us</a>
             </Link>
             <Link href="/">
-              <li>Help</li>
+              <a>Help</a>
             </Link>
           </ul>
         </div>

@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import { useUser } from "@auth0/nextjs-auth0";
 import { client } from "../lib/client";
 import { useRouter } from "next/router";
+import { withPageAuthRequired } from "@auth0/nextjs-auth0";
 
-export function LoginForm({ sanityUsers }) {
+export default withPageAuthRequired(function LoginForm({ sanityUsers }) {
   const { user, error, isLoading } = useUser();
   const router = useRouter();
 
@@ -21,11 +22,7 @@ export function LoginForm({ sanityUsers }) {
       name: name,
       phone: phone,
     };
-    console.log(sanityUsers)
     const sanityUser = sanityUsers.map((sUser) => sUser.userId == data.userId);
-    console.log(sanityUser)
-    console.log(data.userId)
-
     if (data && !sanityUser) {
       fetch("/api/user", {
         method: "POST",
@@ -44,31 +41,29 @@ export function LoginForm({ sanityUsers }) {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <label htmlFor="name">
-        Enter your name:
+    <div className="form-container">
+      <form onSubmit={handleSubmit} className="form">
         <input
+        placeholder="Name"
           name="name"
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
-      </label>
-      <label htmlFor="phone">
-        Enter your phone:
         <input
+        placeholder="Telephone"
           name="phone"
           type="tel"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
         />
-      </label>
-      <input type="submit" value="Submit" />
-    </form>
+        <div>
+        <input type="submit" value="Submit" className="form-button"/>
+        </div>
+      </form>
+    </div>
   );
-}
-
-export default LoginForm;
+});
 
 export const getStaticProps = async ({ params }) => {
   const query = `*[_type == "user"]`;

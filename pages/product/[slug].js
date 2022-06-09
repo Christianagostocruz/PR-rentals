@@ -9,10 +9,17 @@ import Modal from "../../components/Modal";
 const ProductDetails = ({ product, products }) => {
   const [show, setShow] = useState(false);
   const { image, name, details, price } = product;
-  const { qty, onAdd, selectedDay, setSelectedDay, setShowCart, showFormattedFromDate } =
-    useStateContext();
-console.log(product)
+  const {
+    qty,
+    onAdd,
+    selectedDay,
+    setSelectedDay,
+    setShowCart,
+    showFormattedFromDate,
+  } = useStateContext();
   const [index, setIndex] = useState(0);
+  
+  const randomize = products.sort( () => .5 - Math.random() );
 
   const handleBuyNow = () => {
     onAdd(product, qty);
@@ -67,11 +74,18 @@ console.log(product)
             </div>
           </div>
           <div className="buttons">
-            <span className="price">${price}<br/> <small className="price-details">per night</small></span>
+            <span className="price">
+              ${price}
+              <br /> <small className="price-details">per night</small>
+            </span>
             {!qty ? (
               <span className="price">$0</span>
             ) : (
-              <span className="price">${price * qty}<br/><small className="price-details">{qty} nights</small></span>
+              <span className="price">
+                ${price * qty}
+                <br />
+                <small className="price-details">{qty} nights</small>
+              </span>
             )}
           </div>
           <div className="buttons">
@@ -120,7 +134,7 @@ console.log(product)
         <h2>You may also like</h2>
         <div className="marquee">
           <div className="maylike-products-container track">
-            {products.map((item) => (
+            {randomize.map((item) => (
               <Product key={item._id} product={item} />
             ))}
           </div>
