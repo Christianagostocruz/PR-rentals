@@ -1,9 +1,10 @@
 import React from "react";
 import { client } from "../lib/client";
 import { Product, FooterBanner, HeroBanner } from "../components";
-import { getSession } from "@auth0/nextjs-auth0";
 
 const Home = ({ products, bannerData, user }) => {
+  const randomize = products.sort(() => 0.5 - Math.random());
+
   return (
     <div>
       <HeroBanner heroBanner={bannerData.length && bannerData[0]} />
@@ -11,14 +12,15 @@ const Home = ({ products, bannerData, user }) => {
         <h2>Best Properties</h2>
         <p>Enjoy out best rentals properties on PR.</p>
       </div>
-
-      <div className="products-container">
-        {products?.map((product) => (
+      <div className="marquee">
+      <div className="maylike-products-container track">
+        {randomize?.map((product) => (
           <Product key={product._id} product={product} />
         ))}
       </div>
+      </div>
 
-      <FooterBanner footerBanner={bannerData && bannerData[0]} />
+      <FooterBanner footerBanner={bannerData && bannerData[1]} />
     </div>
   );
 };
@@ -33,18 +35,6 @@ export const getServerSideProps = async ({ req, res }) => {
   const userQuery = `*[_type == "user"]`;
   const user = await client.fetch(userQuery);
 
-  const session = await getSession(req, res);
-  console.log("SECCION", session);
-  console.log("RULE", session?.user["http://localhost:3000/is_new"]);
-  if (session?.user["http://localhost:3000/is_new"]) {
-    session.user["http://localhost:3000/is_new"] = true;
-    return {
-      redirect: {
-        permanent: false,
-        destination: "/loginForm",
-      },
-    };
-  }
   return {
     props: { products, bannerData, user },
   };
