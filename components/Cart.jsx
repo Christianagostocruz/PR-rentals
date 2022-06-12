@@ -3,14 +3,12 @@ import Link from "next/link";
 import { AiOutlineLeft, AiOutlineShopping } from "react-icons/ai";
 import { TiDeleteOutline } from "react-icons/ti";
 import toast from "react-hot-toast";
-
 import { useStateContext } from "../context/StateContext";
 import { urlFor } from "../lib/client";
 import getStripe from "../lib/getStripe";
 
-const Cart = () => {
-  const cartRef = useRef();
-  const { totalPrice, cartItems, setShowCart, onRemove } = useStateContext();
+const Cart = ({setIsComponentVisible}) => {
+  const { totalPrice, cartItems, onRemove } = useStateContext();
 
   const handleCheckout = async () => {
     const stripe = await getStripe();
@@ -31,14 +29,14 @@ const Cart = () => {
 
     stripe.redirectToCheckout({ sessionId: data.id });
   };
-  
+
   return (
-    <div className="cart-wrapper" ref={cartRef}>
+    <div className="cart-wrapper">
       <div className="cart-container">
         <button
           type="button"
           className="cart-heading"
-          onClick={() => setShowCart(false)}
+          onClick={() => setIsComponentVisible(false)}
         >
           <AiOutlineLeft />
           <span className="heading">Your Cart</span>
@@ -51,8 +49,8 @@ const Cart = () => {
             <Link href="/">
               <button
                 type="button"
-                onClick={() => setShowCart(false)}
                 className="btn"
+                onClick={() => setIsComponentVisible(false)}
               >
                 Continue Shopping
               </button>

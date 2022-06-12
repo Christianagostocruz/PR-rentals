@@ -1,62 +1,58 @@
-import React, { useState } from "react";
 import { AiOutlineMenu } from "react-icons/ai";
-import { TiDeleteOutline } from "react-icons/ti";
 import Link from "next/link";
 import { useUser } from "@auth0/nextjs-auth0";
+import useComponentVisible from "./Hooks/useComponentVisible";
 
 const HeaderMenu = () => {
-  const [openMenu, setOpenMenu] = useState(false);
-
+  const { ref, isComponentVisible, setIsComponentVisible } =
+    useComponentVisible(false);
   const openMenuModal = () => {
-    setOpenMenu(!openMenu);
+    isComponentVisible
+      ? setIsComponentVisible(false)
+      : setIsComponentVisible(true);
   };
-  const { user, error, isLoading } = useUser();
+  const { user, isLoading } = useUser();
   if (isLoading) {
     return <div>Loading ...</div>;
   }
 
   return (
-    <div>
-      {openMenu == false && (
-        <div className="header-menu-button" onClick={openMenuModal}>
-          <AiOutlineMenu />
-        </div>
-      )}
-      {openMenu == true && (
-        <div className="header-menu-button" onClick={openMenuModal}>
-          <AiOutlineMenu />
-        </div>
-      )}
-      {openMenu == true && (
-        <div className="header-menu">
-          <ul>
-            {!isLoading && !user && (
-              <>
-                <Link href="/api/auth/login">
-                  <a>Login</a>
-                </Link>
-                <Link href="/loginForm">
-                  <a>Become Host</a>
-                </Link>
-              </>
-            )}
-            {!isLoading && user && (
-              <>
-                <Link href="/user/profile">
-                  <a>Dashboard</a>
-                </Link>
-                <Link href="/api/auth/logout">
-                  <a>Logout</a>
-                </Link>
-              </>
-            )}
-            <Link href="/">
-              <a>About us</a>
-            </Link>
-            <Link href="/">
-              <a>Help</a>
-            </Link>
-          </ul>
+    <div ref={ref}>
+      <div className="header-menu-button" onClick={openMenuModal}>
+        <AiOutlineMenu />
+      </div>
+      {isComponentVisible && (
+        <div className="cart-wrapper">
+          <div className="cart-container">
+            <ul className="header-menu">
+              {!isLoading && !user && (
+                <>
+                  <Link href="/api/auth/login">
+                    <a>Login</a>
+                  </Link>
+                  <Link href="/loginForm">
+                    <a>Become Host</a>
+                  </Link>
+                </>
+              )}
+              {!isLoading && user && (
+                <>
+                  <Link href="/user/profile">
+                    <a>Dashboard</a>
+                  </Link>
+                  <Link href="/api/auth/logout">
+                    <a>Logout</a>
+                  </Link>
+                </>
+              )}
+              <Link href="/aboutUs">
+                <a>About us</a>
+              </Link>
+              <Link href="/">
+                <a>Help</a>
+              </Link>
+            </ul>
+          </div>
         </div>
       )}
     </div>

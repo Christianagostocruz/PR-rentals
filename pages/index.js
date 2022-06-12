@@ -13,13 +13,12 @@ const Home = ({ products, bannerData, user }) => {
         <p>Enjoy out best rentals properties on PR.</p>
       </div>
       <div className="marquee">
-      <div className="maylike-products-container track">
-        {randomize?.map((product) => (
-          <Product key={product._id} product={product} />
-        ))}
+        <div className="maylike-products-container track">
+          {randomize?.map((product) => (
+            <Product key={product._id} product={product} />
+          ))}
+        </div>
       </div>
-      </div>
-
       <FooterBanner footerBanner={bannerData && bannerData[1]} />
     </div>
   );
