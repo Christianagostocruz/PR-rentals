@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { AiFillStar, AiOutlineStar } from "react-icons/ai";
 import { client, urlFor } from "../../lib/client";
 import { Product } from "../../components";
@@ -8,29 +8,22 @@ import Modal from "../../components/Modal";
 
 const ProductDetails = ({ product, products }) => {
   const [show, setShow] = useState(false);
-  const { image, name, details, price } = product;
-  const {
-    qty,
-    onAdd,
-    selectedDay,
-    setSelectedDay,
-    setShowCart,
-    showFormattedFromDate,
-  } = useStateContext();
   const [index, setIndex] = useState(0);
-  
-  const randomize = products.sort( () => .5 - Math.random() );
+  const [randomizeProduct, setRandomizeProduct] = useState();
+  const { image, name, details, price } = product;
+  const { qty, onAdd, selectedDay, setSelectedDay } = useStateContext();
 
-  const handleBuyNow = () => {
-    onAdd(product, qty);
-    setShowCart(true);
-  };
+  useEffect(() => {
+    setRandomizeProduct(() => products?.sort(() => 0.5 - Math.random()));
+  }, []);
+
   return (
     <div>
       <div className="product-detail-container">
         <div>
           <div className="image-container">
             <img
+              alt="Product Image"
               src={urlFor(image && image[index])}
               onClick={() => setShow(true)}
               className="product-detail-image"
@@ -39,6 +32,7 @@ const ProductDetails = ({ product, products }) => {
           <div className="small-images-container">
             {image?.map((item, i) => (
               <img
+                alt="Products Images"
                 key={i}
                 src={urlFor(item)}
                 className={
@@ -98,13 +92,6 @@ const ProductDetails = ({ product, products }) => {
                 >
                   Add to Cart
                 </button>
-                <button
-                  type="button"
-                  className="buy-now"
-                  onClick={handleBuyNow}
-                >
-                  Buy Now
-                </button>
               </>
             ) : (
               <>
@@ -116,14 +103,6 @@ const ProductDetails = ({ product, products }) => {
                 >
                   Add to Cart
                 </button>
-                <button
-                  type="button"
-                  className="buy-now-disabled"
-                  disabled
-                  onClick={handleBuyNow}
-                >
-                  Buy Now
-                </button>
               </>
             )}
           </div>
@@ -134,7 +113,7 @@ const ProductDetails = ({ product, products }) => {
         <h2>You may also like</h2>
         <div className="marquee">
           <div className="maylike-products-container track">
-            {randomize.map((item) => (
+            {randomizeProduct?.map((item) => (
               <Product key={item._id} product={item} />
             ))}
           </div>
