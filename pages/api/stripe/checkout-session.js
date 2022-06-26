@@ -14,6 +14,6 @@ export default async function handler(req, res) {
     "🚀 ~ file: checkout-session.js ~ line 8 ~ handler ~ session",
     session
   );
-
+console.log(' LINE ITEMS',session.line_items.data)
   res.status(200).json({ session });
 }

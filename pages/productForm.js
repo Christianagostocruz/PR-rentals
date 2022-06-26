@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { withPageAuthRequired } from "@auth0/nextjs-auth0";
 import Image from "next/image";
 import { getSession } from "@auth0/nextjs-auth0";
-import { client, urlFor } from "../lib/client";
+import { client } from "../lib/client";
 
 export default withPageAuthRequired(function LoginForm({ sanityUser }) {
   const router = useRouter();
@@ -13,15 +13,16 @@ export default withPageAuthRequired(function LoginForm({ sanityUser }) {
   const [price, setPrice] = useState(0);
   const [detail, setDetail] = useState("");
   const [selectedImage, setSelectedImage] = useState();
+  const [image, setImage] = useState();
+  const [imageAssets, setImageAssets] = useState();
 
   const userSlug = name.replaceAll(" ", "").toLowerCase();
 
   const imageChange = (event) => {
     if (event.target.files && event.target.files.length > 0) {
-      const image = URL.createObjectURL(event.target.files[0]);
-      console.log(image)
-      console.log(event.target.files[0])
-      setSelectedImage(image);
+      const prevImg = URL.createObjectURL(event.target.files[0]);
+      setSelectedImage(prevImg);
+      setImage(event.target.files[0]);
     }
   };
 
@@ -29,29 +30,38 @@ export default withPageAuthRequired(function LoginForm({ sanityUser }) {
     setSelectedImage();
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log(selectedImage);
-    const data = {
-      userId: sanityUser[0]._id,
-      slug: userSlug,
-      name: name,
-      category: category,
-      price: price,
-      detail: detail,
-      image: selectedImage,
-    };
-
-    fetch("/api/product/productPost", {
-      method: "POST",
-      body: JSON.stringify(data),
-    })
-      .then(() => {
-        console.log(data);
-        router.push("/user/profile");
+    //sanity manage fit the cors security
+    client.assets
+      .upload("image", image, {
+        contentType: image.type,
+        filename: image.name,
       })
-      .catch((err) => {
-        console.log(err);
+      .then((document) => {
+        console.log("DOCUMENT", document);
+        setImageAssets(document);
+        const data = {
+          userId: sanityUser[0]._id,
+          slug: userSlug,
+          name: name,
+          category: category,
+          price: price,
+          detail: detail,
+          image: document,
+        };
+
+        fetch("/api/product/productPost", {
+          method: "POST",
+          body: JSON.stringify(data),
+        })
+          .then(() => {
+            console.log(data);
+            router.push("/user/profile");
+          })
+          .catch((err) => {
+            console.log(err);
+          });
       });
   };
 
@@ -96,7 +106,7 @@ export default withPageAuthRequired(function LoginForm({ sanityUser }) {
             accept="image/*"
             onChange={imageChange}
           />
-          {/* {selectedImage && (
+          {selectedImage && (
             <div className="form-img-preview">
               <Image
                 height={200}
@@ -108,7 +118,7 @@ export default withPageAuthRequired(function LoginForm({ sanityUser }) {
                 <button onClick={removeSelectedImage}>Remove</button>
               </div>
             </div>
-          )} */}
+          )}
         </div>
         <textarea
           rows="4"
